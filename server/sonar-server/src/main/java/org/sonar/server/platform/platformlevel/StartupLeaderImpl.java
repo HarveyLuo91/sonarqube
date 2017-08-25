@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.server.platform.cluster;
+package org.sonar.server.platform.platformlevel;
 
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.log.Loggers;
@@ -25,24 +25,17 @@ import org.sonar.process.ProcessProperties;
 
 import static org.sonar.process.ProcessProperties.CLUSTER_WEB_LEADER;
 
-public class ClusterImpl implements Cluster {
+public class StartupLeaderImpl implements StartupLeader {
 
-  private final boolean enabled;
   private final boolean startupLeader;
 
-  public ClusterImpl(Configuration config) {
-    this.enabled = config.getBoolean(ProcessProperties.CLUSTER_ENABLED).orElse(false);
-    if (this.enabled) {
+  public StartupLeaderImpl(Configuration config) {
+    if (config.getBoolean(ProcessProperties.CLUSTER_ENABLED).orElse(false)) {
       this.startupLeader = config.getBoolean(CLUSTER_WEB_LEADER).orElse(false);
-      Loggers.get(ClusterImpl.class).info("Cluster enabled (startup {})", startupLeader ? "leader" : "follower");
+      Loggers.get(StartupLeaderImpl.class).info("Cluster enabled (startup {})", startupLeader ? "leader" : "follower");
     } else {
       this.startupLeader = true;
     }
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return enabled;
   }
 
   @Override

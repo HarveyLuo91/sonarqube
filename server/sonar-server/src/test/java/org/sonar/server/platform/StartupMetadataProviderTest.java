@@ -31,7 +31,7 @@ import org.sonar.api.utils.System2;
 import org.sonar.api.utils.Version;
 import org.sonar.db.DbTester;
 import org.sonar.db.property.PropertyDto;
-import org.sonar.server.platform.cluster.ClusterMock;
+import org.sonar.server.platform.platformlevel.StartupLeaderMock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,7 +50,7 @@ public class StartupMetadataProviderTest {
 
   private StartupMetadataProvider underTest = new StartupMetadataProvider();
   private System2 system = mock(System2.class);
-  private ClusterMock cluster = new ClusterMock();
+  private StartupLeaderMock cluster = new StartupLeaderMock();
 
   @Test
   public void generate_SERVER_STARTIME_but_do_not_persist_it_if_server_is_startup_leader() {

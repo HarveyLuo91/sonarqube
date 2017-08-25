@@ -17,30 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.server.platform.cluster;
+package org.sonar.server.platform.platformlevel;
 
-public class ClusterMock implements Cluster {
+public interface StartupLeader {
 
-  private boolean enabled = false;
-  private boolean startupLeader = false;
+  /**
+   * The startup leader is the first node to be started in a cluster. It's the only one
+   * to create and populate datastores.
+   * A standard node is automatically marked as "startup leader" when cluster
+   * is disabled (default).
+   */
+  boolean isStartupLeader();
 
-  public ClusterMock setEnabled(boolean b) {
-    this.enabled = b;
-    return this;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return enabled;
-  }
-
-  public ClusterMock setStartupLeader(boolean b) {
-    this.startupLeader = b;
-    return this;
-  }
-
-  @Override
-  public boolean isStartupLeader() {
-    return startupLeader;
-  }
 }

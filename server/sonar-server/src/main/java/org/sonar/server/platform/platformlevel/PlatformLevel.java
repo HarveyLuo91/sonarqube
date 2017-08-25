@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.sonar.core.platform.ComponentContainer;
 import org.sonar.core.platform.Module;
-import org.sonar.server.platform.cluster.Cluster;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -162,7 +161,7 @@ public abstract class PlatformLevel {
   }
 
   private boolean isStartupLeader() {
-    Optional<Cluster> cluster = getOptional(Cluster.class);
+    Optional<StartupLeader> cluster = getOptional(StartupLeader.class);
     checkState(cluster.isPresent(), "Cluster settings not loaded yet");
     return cluster.get().isStartupLeader();
   }

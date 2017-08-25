@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.utils.System2;
 import org.sonar.server.platform.Platform;
-import org.sonar.server.platform.cluster.Cluster;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -39,7 +38,7 @@ public class PlatformLevel1Test {
     underTest.configureLevel();
 
     assertThat(underTest.getAll(PropertyDefinition.class)).isNotEmpty();
-    assertThat(underTest.getOptional(Cluster.class)).isPresent();
+    assertThat(underTest.getOptional(StartupLeader.class)).isPresent();
     assertThat(underTest.getOptional(System2.class)).isPresent();
   }
 }

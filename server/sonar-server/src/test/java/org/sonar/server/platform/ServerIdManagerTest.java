@@ -33,7 +33,7 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.DbTester;
 import org.sonar.db.property.PropertyDto;
-import org.sonar.server.platform.cluster.ClusterMock;
+import org.sonar.server.platform.platformlevel.StartupLeaderMock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -52,7 +52,7 @@ public class ServerIdManagerTest {
 
   private DbClient dbClient = dbTester.getDbClient();
   private DbSession dbSession = dbTester.getSession();
-  private ClusterMock cluster = new ClusterMock();
+  private StartupLeaderMock cluster = new StartupLeaderMock();
   private UuidFactory uuidFactory = mock(UuidFactory.class);
 
   private static SonarRuntime runtimeFor(SonarQubeSide side) {
