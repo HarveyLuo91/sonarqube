@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.sonar.api.config.Configuration;
+import org.sonar.cluster.ClusterProperties;
 import org.sonar.core.platform.ComponentContainer;
 import org.sonar.core.platform.Module;
 
@@ -129,34 +131,63 @@ public abstract class PlatformLevel {
   }
 
   /**
-   * Add a component to container only if the server node is marked as "startupLeader" (cluster disabled
-   * or first node of the cluster to be started).
+   * Add a component to container only if the web server is startup leader.
    *
    * @throws IllegalStateException if called from PlatformLevel1, when cluster settings are not loaded
    */
-  protected AddIfStartupLeader addIfStartupLeader(Object... objects) {
+  AddIfStartupLeader addIfStartupLeader(Object... objects) {
     AddIfStartupLeader res = new AddIfStartupLeader(isStartupLeader());
     res.ifAdd(objects);
     return res;
   }
 
-  public final class AddIfStartupLeader {
-    private final boolean startupLeader;
+  /**
+   * Add a component to container only if clustering is enabled.
+   *
+   * @throws IllegalStateException if called from PlatformLevel1, when cluster settings are not loaded
+   */
+  AddIfCluster addIfCluster(Object... objects) {
+    AddIfCluster res = new AddIfCluster(isClusterEnabled());
+    res.ifAdd(objects);
+    return res;
+  }
 
-    private AddIfStartupLeader(boolean startupLeader) {
-      this.startupLeader = startupLeader;
+  private boolean isClusterEnabled() {
+    Optional<Configuration> cluster = getOptional(Configuration.class);
+    return cluster
+      .map(c -> c.getBoolean(ClusterProperties.CLUSTER_ENABLED).orElse(Boolean.FALSE))
+      .orElseThrow(() -> new IllegalStateException("Cluster settings not loaded yet"));
+  }
+
+  private abstract class AddIf {
+    private final boolean condition;
+
+    private AddIf(boolean condition) {
+      this.condition = condition;
     }
 
-    private void ifAdd(Object... objects) {
-      if (startupLeader) {
+    public void ifAdd(Object... objects) {
+      if (condition) {
         PlatformLevel.this.add(objects);
       }
     }
 
     public void otherwiseAdd(Object... objects) {
-      if (!startupLeader) {
+      if (!condition) {
         PlatformLevel.this.add(objects);
       }
+    }
+  }
+
+  public final class AddIfStartupLeader extends AddIf {
+    private AddIfStartupLeader(boolean condition) {
+      super(condition);
+    }
+  }
+
+  public final class AddIfCluster extends AddIf {
+    private AddIfCluster(boolean condition) {
+      super(condition);
     }
   }
 

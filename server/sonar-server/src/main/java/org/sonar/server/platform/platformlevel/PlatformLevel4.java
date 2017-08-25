@@ -31,6 +31,7 @@ import org.sonar.api.rules.XMLRuleParser;
 import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
 import org.sonar.ce.CeModule;
 import org.sonar.ce.settings.ProjectConfigurationFactory;
+import org.sonar.cluster.localclient.HazelcastLocalClient;
 import org.sonar.core.component.DefaultResourceTypes;
 import org.sonar.core.timemachine.Periods;
 import org.sonar.server.authentication.AuthenticationModule;
@@ -237,6 +238,8 @@ public class PlatformLevel4 extends PlatformLevel {
       IndexCreator.class,
       MetadataIndexDefinition.class,
       MetadataIndex.class);
+
+    addIfCluster(HazelcastLocalClient.class);
 
     add(
       PluginDownloader.class,
