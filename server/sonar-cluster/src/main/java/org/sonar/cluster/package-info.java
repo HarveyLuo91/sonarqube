@@ -17,29 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.server.platform.platformlevel;
+@ParametersAreNonnullByDefault
+package org.sonar.cluster;
 
-import org.sonar.api.config.Configuration;
-import org.sonar.api.utils.log.Loggers;
-
-import static org.sonar.cluster.ClusterProperties.CLUSTER_ENABLED;
-import static org.sonar.cluster.ClusterProperties.CLUSTER_WEB_LEADER;
-
-public class StartupLeaderImpl implements StartupLeader {
-
-  private final boolean startupLeader;
-
-  public StartupLeaderImpl(Configuration config) {
-    if (config.getBoolean(CLUSTER_ENABLED).orElse(false)) {
-      this.startupLeader = config.getBoolean(CLUSTER_WEB_LEADER).orElse(false);
-      Loggers.get(StartupLeaderImpl.class).info("Cluster enabled (startup {})", startupLeader ? "leader" : "follower");
-    } else {
-      this.startupLeader = true;
-    }
-  }
-
-  @Override
-  public boolean isStartupLeader() {
-    return startupLeader;
-  }
-}
+import javax.annotation.ParametersAreNonnullByDefault;
