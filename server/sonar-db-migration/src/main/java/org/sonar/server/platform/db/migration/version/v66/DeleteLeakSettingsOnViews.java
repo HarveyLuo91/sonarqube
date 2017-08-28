@@ -20,20 +20,29 @@
 
 package org.sonar.server.platform.db.migration.version.v66;
 
-import org.sonar.server.platform.db.migration.step.MigrationStepRegistry;
-import org.sonar.server.platform.db.migration.version.DbVersion;
+import java.sql.SQLException;
+import org.sonar.db.Database;
+import org.sonar.server.platform.db.migration.step.DataChange;
+import org.sonar.server.platform.db.migration.step.MassUpdate;
 
-public class DbVersion66 implements DbVersion {
-  @Override
-  public void addSteps(MigrationStepRegistry registry) {
-    registry
-      .add(1800, "Create table project_branches", CreateTableProjectBranches.class)
-      .add(1801, "Add on project_branches key", AddIndexOnProjectBranchesKey.class)
-      .add(1802, "Add branch column to projects table", AddBranchColumnToProjectsTable.class)
-      .add(1803, "Add incremental column to snapthots table", AddIncrementalColumnToSnapshotsTable.class)
-      .add(1804, "Create table CE task characteristics", CreateTableCeTaskCharacteristics.class)
-      .add(1805, "Populate project_branches with existing main branches", PopulateMainProjectBranches.class)
-      .add(1806, "Delete leak settings on views", DeleteLeakSettingsOnViews.class)
-    ;
+public class DeleteLeakSettingsOnViews extends DataChange {
+
+  public DeleteLeakSettingsOnViews(Database db) {
+    super(db);
   }
+
+  @Override
+  protected void execute(Context context) throws SQLException {
+    MassUpdate massUpdate = context.prepareMassUpdate();
+    massUpdate.select("SELECT prop.id FROM properties prop " +
+      "INNER JOIN projects p ON p.id=prop.resource_id AND p.qualifier IN ('VW','SVW') " +
+      "WHERE prop.prop_key='sonar.leak.period' or prop.prop_key='sonar.timemachine.period1' ");
+    massUpdate.update("DELETE from properties WHERE id=?");
+    massUpdate.rowPluralName("leak period settings on views");
+    massUpdate.execute((row, update) -> {
+      update.setLong(1, row.getLong(1));
+      return true;
+    });
+  }
+
 }
