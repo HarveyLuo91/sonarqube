@@ -115,7 +115,7 @@ import org.sonar.server.platform.web.WebPagesFilter;
 import org.sonar.server.platform.web.requestid.HttpRequestIdModule;
 import org.sonar.server.platform.ws.ChangeLogLevelAction;
 import org.sonar.server.platform.ws.DbMigrationStatusAction;
-import org.sonar.server.platform.ws.InfoAction;
+import org.sonar.server.platform.ws.InfoActionModule;
 import org.sonar.server.platform.ws.L10nWs;
 import org.sonar.server.platform.ws.LogsAction;
 import org.sonar.server.platform.ws.MigrateDbAction;
@@ -185,6 +185,7 @@ import org.sonar.server.source.ws.LinesAction;
 import org.sonar.server.source.ws.RawAction;
 import org.sonar.server.source.ws.ScmAction;
 import org.sonar.server.source.ws.SourcesWs;
+import org.sonar.server.telemetry.TelemetryModule;
 import org.sonar.server.test.index.TestIndex;
 import org.sonar.server.test.index.TestIndexDefinition;
 import org.sonar.server.test.index.TestIndexer;
@@ -471,7 +472,7 @@ public class PlatformLevel4 extends PlatformLevel {
       // System
       ServerLogging.class,
       RestartAction.class,
-      InfoAction.class,
+      InfoActionModule.class,
       PingAction.class,
       UpgradesAction.class,
       StatusAction.class,
@@ -529,6 +530,10 @@ public class PlatformLevel4 extends PlatformLevel {
 
       RecoveryIndexer.class,
       ProjectIndexersImpl.class);
+    addIfStartupLeader(
+      // Telemetry
+      TelemetryModule.class);
+
     addAll(level4AddedComponents);
   }
 
